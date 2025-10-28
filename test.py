@@ -29,7 +29,7 @@ coefficients = [
 
 coefficients = np.array(coefficients)
 
-alpha = 0.000001
+alpha = 0.000005
 
 discrete_xs, discrete_ys = zip(*points)
 
@@ -76,15 +76,26 @@ def back_prop():
 def back_prop_sum_all():
     grad = np.zeros(5)
     for x, y in points:
-        err = (y - coef_poly(coefficients, x))                  # scalar
-        grad += -2 * err * np.array([x**4, x**3, x**2, x, 1.0])  # accumulate
+        err = (y - coef_poly(coefficients, x))
+        grad += -2 * err * np.array([x**4, x**3, x**2, x, 1.0])
     return grad
 
 def minimize():
     global coefficients
     coefficients = coefficients - alpha*back_prop_sum_all()
+    print(back_prop_sum_all())
 
-for i in range(100):
-    minimize()
-    print(forward_prop())
+# while forward_prop() > 0.1:
+#     print(forward_prop())
+#     minimize()
 print(coefficients)
+print(forward_prop())
+
+def g(x):
+    coeffs = np.asarray(coefficients).ravel()
+    x_l = np.asarray(x)
+    X = np.vstack([x_l**4, x_l**3, x_l**2, x_l, np.ones_like(x)]).T
+    y = X.dot(coeffs)
+    return y
+plt.plot(x, g(x))
+plt.show()
